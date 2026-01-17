@@ -44,14 +44,105 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAxis(TEXT("MoveKey"), this, & APlayerCharacter::MoveFront);
 	PlayerInputComponent->BindAxis(TEXT("MoveKey"), this, &APlayerCharacter::MoveBack);
 
+	PlayerInputComponent->BindAxis(TEXT("RotationKey"), this, &APlayerCharacter::Rotation);
+	PlayerInputComponent->BindAxis(TEXT("ZoomKey"), this, &APlayerCharacter::CameraZoom);
+	PlayerInputComponent->BindAxis(TEXT("LoopUpKey"), this, &APlayerCharacter::CameraLoopUp);
+
+
 }
 
 void APlayerCharacter::MoveFront(float scale)
 {	
 	AddMovementInput(GetActorForwardVector(), scale, false);
+	
 }
 
 void APlayerCharacter::MoveBack(float scale)
 {
 	AddMovementInput(GetActorForwardVector(), scale, false);
 }
+
+void APlayerCharacter::Rotation(float scale)
+{
+	AddControllerYawInput(scale);
+}
+
+void APlayerCharacter::CameraZoom(float scale)
+{
+	mArm->TargetArmLength -= scale * 20.f;
+
+	//if (mArm->TargetArmLength < 30.f)
+	//{
+	//	mArm->TargetArmLength = 30.f;
+	//}
+	//else if (mArm->TargetArmLength > 500.f)
+	//{
+	//	mArm->TargetArmLength = 500.f;
+	//}
+
+	mArm->TargetArmLength =FMath::Clamp(mArm->TargetArmLength, 30.f, 500.f);
+	
+		
+}
+
+//zoom보간
+//void APlayerCharacter::CameraZoom(float scale)
+//{
+//	// 1. 목표치 계산: 마우스 입력을 받아 가고자 하는 목적지를 갱신
+//	// scale이 0이 아닐 때만 목표치를 변경합니다.
+//	TargetZoomLength -= scale * 50.f;
+//
+//	// 2. 목표치 제한 (Clamp): 30 ~ 500 사이로 유지
+//	TargetZoomLength = FMath::Clamp(TargetZoomLength, 30.f, 500.f);
+//
+//	// 3. 현재 거리에서 목표 거리까지 부드럽게 보간 (FInterpTo)
+//	// InterpSpeed(여기서는 10.f)가 높을수록 줌이 빠르고, 낮을수록 천천히 움직입니다.
+//	mArm->TargetArmLength = FMath::FInterpTo(
+//		mArm->TargetArmLength,
+//		TargetZoomLength,
+//		GetWorld()->GetDeltaSeconds(),
+//		10.f
+//	);
+//}
+// 
+//LoopUp보간
+void APlayerCharacter::CameraLoopUp(float scale)
+{
+	// 1. 현재 회전값 가져오기
+	FRotator CurrentRot = mArm->GetRelativeRotation();
+
+	// 2. 목표 각도 계산 (가고자 하는 최종 목적지)
+	// 보정치를 주어 더 큰 범위로 움직이게 하려면 10.f 대신 더 높은 감도값을 사용하세요.
+	float TargetPitch = CurrentRot.Pitch + (scale * 20.f);
+
+	// 3. 각도 제한 (Clamp)
+	TargetPitch = FMath::Clamp(TargetPitch, -45.f, -15.f);
+
+	// 4. 부드러운 보간 (FInterpTo) 사용
+	// 현재 각도에서 목표 각도까지 DeltaSeconds와 속도(InterpSpeed)를 이용해 부드럽게 이동합니다.
+	FRotator NewRot = CurrentRot;
+	NewRot.Pitch = FMath::FInterpTo(CurrentRot.Pitch, TargetPitch, GetWorld()->GetDeltaSeconds(), 10.f);
+
+	// 5. 최종 회전값 적용
+	mArm->SetRelativeRotation(NewRot);
+}
+
+
+//void APlayerCharacter::CameraLoopUp(float scale)
+//{
+//	FRotator Rot = mArm->GetRelativeRotation();
+//
+//	Rot.Pitch += scale * 10.f * GetWorld()->GetDeltaSeconds();
+//
+//	if (Rot.Pitch > -15.f)
+//	{
+//		Rot.Pitch = -15.f;
+//	}
+//	else if (Rot.Pitch < -45.f)
+//	{
+//		Rot.Pitch = -45.f;
+//	}
+//
+//	mArm->SetRelativeRotation(Rot);
+//}
+
