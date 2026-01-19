@@ -14,8 +14,8 @@ ARPGGameModeBase::ARPGGameModeBase()
 
     //레펀러스복사했을때 조심해야된다 경로가 다르다는거 지워야될곳을 잘체크 
     /// Script / Engine.Blueprint'/Game/Player/BP_Shinbi.BP_Shinbi'
-    ConstructorHelpers::FClassFinder<APawn> PawnClass(TEXT("Blueprint'/Game/Player/BP_Shinbi.BP_Shinbi_C'"));
-
+    ConstructorHelpers::FClassFinder<APawn> PawnClass(TEXT("/Script/Engine.Blueprint'/Game/Player/BP_Shinbi.BP_Shinbi_C'"));
+   
     if (PawnClass.Succeeded()) 
     {
         DefaultPawnClass = PawnClass.Class;
