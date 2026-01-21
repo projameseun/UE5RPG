@@ -2,7 +2,8 @@
 
 
 #include "PlayerCharacter.h"
-
+#include "EnhancedInputComponent.h" 
+#include "EnhancedInputSubsystems.h"
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -19,12 +20,34 @@ APlayerCharacter::APlayerCharacter()
 	//Camera의 부모 Component로 Arm을 지정
 	mCamera->SetupAttachment(mArm);
 
+	//inputsystem
+	static ConstructorHelpers::FObjectFinder<class UInputAction> MoveAsset = (TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Move.IA_Move'"));
+
+	if (MoveAsset.Succeeded())
+	{
+		mMoveAction = MoveAsset.Object;
+	}
+
+	static ConstructorHelpers::FObjectFinder<class UInputMappingContext> IMC = (TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_RPG.IMC_RPG'"));
+
+	if (IMC.Succeeded())
+	{
+		mMappingContext = IMC.Object;
+	}
 }
 
 // Called when the game starts or when spawned
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (APlayerController* playerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsytem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
+		{
+			Subsytem->AddMappingContext(mMappingContext, 0);
+		}
+	}
 	
 }
 
@@ -41,26 +64,29 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	
-	PlayerInputComponent->BindAxis(TEXT("MoveKey"), this, & APlayerCharacter::MoveFront);
-	PlayerInputComponent->BindAxis(TEXT("MoveKey"), this, &APlayerCharacter::MoveBack);
+	//PlayerInputComponent->BindAxis(TEXT("MoveKey"), this, & APlayerCharacter::MoveFront);
+	//PlayerInputComponent->Bin  dAxis(TEXT("MoveKey"), this, &APlayerCharacter::MoveBack);
 
 	PlayerInputComponent->BindAxis(TEXT("RotationKey"), this, &APlayerCharacter::Rotation);
 	PlayerInputComponent->BindAxis(TEXT("ZoomKey"), this, &APlayerCharacter::CameraZoom);
 	PlayerInputComponent->BindAxis(TEXT("LoopUpKey"), this, &APlayerCharacter::CameraLoopUp);
 
+	UEnhancedInputComponent* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 
-}
-
-void APlayerCharacter::MoveFront(float scale)
-{	
-	AddMovementInput(GetActorForwardVector(), scale, false);
+	enhancedInputComponent->BindAction(mMoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::EnhancedInputMove);
 	
 }
 
-void APlayerCharacter::MoveBack(float scale)
-{
-	AddMovementInput(GetActorForwardVector(), scale, false);
-}
+//void APlayerCharacter::MoveFront(float scale)
+//{	
+//	//AddMovementInput(GetActorForwardVector(), scale, false);
+//	
+//}
+//
+//void APlayerCharacter::MoveBack(float scale)
+//{
+//	//AddMovementInput(GetActorForwardVector(), scale, false);
+//}
 
 void APlayerCharacter::Rotation(float scale)
 {
@@ -145,4 +171,61 @@ void APlayerCharacter::CameraLoopUp(float scale)
 //
 //	mArm->SetRelativeRotation(Rot);
 //}
+
+//EnhancedInput
+void APlayerCharacter::EnhancedInputMove(const FInputActionValue& value)
+{
+	
+	FVector2D MoveVector = value.Get<FVector2D>();
+	UE_LOG(LogTemp, Warning, TEXT("EnhancedInputMove"));
+
+	//if (Controller != nullptr)
+	//{
+	//	// 컨트롤러 회전 방향을 기준으로 앞방향 계산
+	//	const FRotator Rotation = Controller->GetControlRotation();
+	//	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	//	// 앞/뒤 이동
+	//	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	//	AddMovementInput(ForwardDirection, MoveVector.Y);
+
+	//	// 좌/우 이동
+	//	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	//	AddMovementInput(RightDirection, MoveVector.X);
+	//}
+
+	//또다른방법
+	if (Controller != nullptr)
+	{
+		const FRotator MoveRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
+		
+		if (MoveVector.X > 0.05f || MoveVector.X < 0.05f)
+		{
+			const FVector directionVector = MoveRotation.RotateVector(FVector::RightVector);
+			AddMovementInput(directionVector, MoveVector.X);
+		}
+
+		if (MoveVector.Y > 0.05f || MoveVector.Y < 0.05f)
+		{
+			const FVector directionVector = MoveRotation.RotateVector(FVector::ForwardVector);
+			AddMovementInput(directionVector, MoveVector.Y);
+		}
+	}
+
+	//또 다른 이동방법 카메라자체가 이동됨
+	/*FVector2D MovementVector = value.Get<FVector2D>();
+
+	float MovementVectorSize = 1.0f;
+	float MovementVectorSizeSquared = MovementVector.SquaredLength();
+
+	if (MovementVectorSizeSquared > 1.0f) {
+		MovementVectorSizeSquared = 1.0f;
+		MovementVector.Normalize();
+	}
+
+	FVector MoveDirection = FVector{ MovementVector.X, MovementVector.Y, 0.0f };
+	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
+	AddMovementInput(MoveDirection, MovementVectorSizeSquared);*/
+
+}
 

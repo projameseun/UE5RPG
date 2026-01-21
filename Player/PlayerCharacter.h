@@ -3,8 +3,12 @@
 #pragma once
 
 #include "../GameInfo.h"
+#include "InputAction.h"
+#include "InputMappingContext.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
+
+
 
 UCLASS()
 class UE5_RPG_API APlayerCharacter : public ACharacter
@@ -22,6 +26,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))	//private를 editor에서 사용할수 잇게됨
 	USpringArmComponent* mArm;
 
+	//input
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction*	mMoveAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* mMappingContext;
+
+	
+
 private:
 	float TargetZoomLength = 500.f; // 목표 줌 거리 (초기값 설정)
 
@@ -37,9 +50,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 public:
-	void MoveFront(float scale);
-	void MoveBack(float scale);
+	//void MoveFront(float scale);
+	//void MoveBack(float scale);
 	void Rotation(float scale);
 	void CameraZoom(float scale);
 	void CameraLoopUp(float scale);
+	void EnhancedInputMove(const FInputActionValue& value);
+
+
+
 };
