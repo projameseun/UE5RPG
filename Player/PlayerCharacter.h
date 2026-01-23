@@ -30,8 +30,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction*	mMoveAction;
 
+	//jump
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* mJumpAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* mMappingContext;
+
+
 
 	
 
@@ -56,6 +62,8 @@ public:
 	void CameraZoom(float scale);
 	void CameraLoopUp(float scale);
 	void EnhancedInputMove(const FInputActionValue& value);
+	void EnhancedInputJump(const FInputActionInstance& instance);
+	
 
 
 

@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include "EnhancedInputComponent.h" 
 #include "EnhancedInputSubsystems.h"
+
 // Sets default values
 APlayerCharacter::APlayerCharacter()
 {
@@ -26,6 +27,14 @@ APlayerCharacter::APlayerCharacter()
 	if (MoveAsset.Succeeded())
 	{
 		mMoveAction = MoveAsset.Object;
+	}
+
+	//jump
+	static ConstructorHelpers::FObjectFinder<UInputAction> JumpAsset = (TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Jump.IA_Jump'"));
+	
+	if (JumpAsset.Succeeded())
+	{
+		mJumpAction = JumpAsset.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<class UInputMappingContext> IMC = (TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_RPG.IMC_RPG'"));
@@ -74,6 +83,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	UEnhancedInputComponent* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
 
 	enhancedInputComponent->BindAction(mMoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::EnhancedInputMove);
+	enhancedInputComponent->BindAction(mJumpAction, ETriggerEvent::Started, this, &APlayerCharacter::EnhancedInputJump);
+	enhancedInputComponent->BindAction(mJumpAction, ETriggerEvent::Completed, this, &APlayerCharacter::EnhancedInputJump);
 	
 }
 
@@ -227,5 +238,20 @@ void APlayerCharacter::EnhancedInputMove(const FInputActionValue& value)
 	GetController()->SetControlRotation(FRotationMatrix::MakeFromX(MoveDirection).Rotator());
 	AddMovementInput(MoveDirection, MovementVectorSizeSquared);*/
 
+}
+
+
+void APlayerCharacter::EnhancedInputJump(const FInputActionInstance& instance)
+{
+	ETriggerEvent CurrentEvent = instance.GetTriggerEvent();
+
+	if (CurrentEvent == ETriggerEvent::Started)
+	{
+		Jump(); // 시작 이벤트일 때만 점프 실행
+	}
+	else if (CurrentEvent == ETriggerEvent::Completed)
+	{
+		StopJumping(); // 완료 이벤트일 때만 점프 중지
+	}
 }
 

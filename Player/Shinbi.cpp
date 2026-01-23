@@ -12,14 +12,21 @@ AShinbi::AShinbi()
 	//생성자에서 에셋을 로딩하는방법 
 	//Actor종류는 A가붙고 
 	//Component,에셋들은 U가붙는다 
-	static ConstructorHelpers::FObjectFinder<USkeletalMesh>  AssetShinbi(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonShinbi/Characters/Heroes/Shinbi/Meshes/Shinbi.Shinbi'"));
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh>  ShinbiAsset(TEXT("/Script/Engine.SkeletalMesh'/Game/ParagonShinbi/Characters/Heroes/Shinbi/Meshes/Shinbi.Shinbi'"));
 	
 	//GetMesh()함수는 Chracter클래스에 만들어져 있는 SkeltalMeshComponent를 얻어오는 함수이다.
-	if (AssetShinbi.Succeeded())
+	if (ShinbiAsset.Succeeded())
 	{
-		GetMesh()->SetSkeletalMesh(AssetShinbi.Object);
+		GetMesh()->SetSkeletalMesh(ShinbiAsset.Object);
 	}
 
+	//anim
+	static ConstructorHelpers::FClassFinder<UAnimInstance> ShinbiAnimAsset(TEXT("/Script/Engine.AnimBlueprint'/Game/Player/BP_ShinbiAnim.BP_ShinbiAnim_C'"));
+
+	if (ShinbiAnimAsset.Succeeded())
+	{
+		GetMesh()->SetAnimInstanceClass(ShinbiAnimAsset.Class);
+	}
 }
 
 // Called when the game starts or when spawned
