@@ -4,6 +4,7 @@
 #include "PlayerCharacter.h"
 #include "EnhancedInputComponent.h" 
 #include "EnhancedInputSubsystems.h"
+#include "PlayerAnim.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -37,6 +38,15 @@ APlayerCharacter::APlayerCharacter()
 		mJumpAction = JumpAsset.Object;
 	}
 
+	//attack
+	static ConstructorHelpers::FObjectFinder<UInputAction> AttackAsset = (TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Attack.IA_Attack'"));
+
+	if (AttackAsset.Succeeded())
+	{
+		mAttackAction = AttackAsset.Object;
+	}
+
+
 	static ConstructorHelpers::FObjectFinder<class UInputMappingContext> IMC = (TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_RPG.IMC_RPG'"));
 
 	if (IMC.Succeeded())
@@ -57,6 +67,9 @@ void APlayerCharacter::BeginPlay()
 			Subsytem->AddMappingContext(mMappingContext, 0);
 		}
 	}
+
+
+	mAnimInstance = Cast<UPlayerAnim>(GetMesh()->GetAnimInstance());
 	
 }
 
@@ -85,6 +98,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	enhancedInputComponent->BindAction(mMoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::EnhancedInputMove);
 	enhancedInputComponent->BindAction(mJumpAction, ETriggerEvent::Started, this, &APlayerCharacter::EnhancedInputJump);
 	enhancedInputComponent->BindAction(mJumpAction, ETriggerEvent::Completed, this, &APlayerCharacter::EnhancedInputJump);
+	enhancedInputComponent->BindAction(mAttackAction, ETriggerEvent::Started, this, &APlayerCharacter::EnhancedInputAttack);
 	
 }
 
@@ -210,16 +224,21 @@ void APlayerCharacter::EnhancedInputMove(const FInputActionValue& value)
 	{
 		const FRotator MoveRotation(0.f, Controller->GetControlRotation().Yaw, 0.f);
 		
-		if (MoveVector.X > 0.05f || MoveVector.X < 0.05f)
+		if (MoveVector.X != 0.f)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("MoveVectorX"));
 			const FVector directionVector = MoveRotation.RotateVector(FVector::RightVector);
 			AddMovementInput(directionVector, MoveVector.X);
+
+			
 		}
 
-		if (MoveVector.Y > 0.05f || MoveVector.Y < 0.05f)
+		if (MoveVector.Y != 0.f)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("MoveVectorY"));
 			const FVector directionVector = MoveRotation.RotateVector(FVector::ForwardVector);
 			AddMovementInput(directionVector, MoveVector.Y);
+
 		}
 	}
 
@@ -253,5 +272,19 @@ void APlayerCharacter::EnhancedInputJump(const FInputActionInstance& instance)
 	{
 		StopJumping(); // 완료 이벤트일 때만 점프 중지
 	}
+}
+
+void APlayerCharacter::EnhancedInputAttack(const FInputActionInstance& key)
+{
+	ETriggerEvent CurrentEvent = key.GetTriggerEvent();
+	if (CurrentEvent == ETriggerEvent::Started)
+	{
+		Attack();
+	}
+}
+
+void APlayerCharacter::Attack()
+{
+
 }
 

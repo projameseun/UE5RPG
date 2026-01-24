@@ -2,6 +2,7 @@
 
 
 #include "Shinbi.h"
+#include "PlayerAnim.h"
 
 // Sets default values
 AShinbi::AShinbi()
@@ -27,6 +28,13 @@ AShinbi::AShinbi()
 	{
 		GetMesh()->SetAnimInstanceClass(ShinbiAnimAsset.Class);
 	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageAsset(TEXT("/Script/Engine.AnimMontage'/Game/Player/MT_ShinbiAttack.MT_ShinbiAttack'"));
+
+	if (AttackMontageAsset.Succeeded())
+	{
+		mAttackMontageArray.Add(AttackMontageAsset.Object);
+	}
 }
 
 // Called when the game starts or when spawned
@@ -48,5 +56,19 @@ void AShinbi::Tick(float DeltaTime)
 void AShinbi::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+}
+
+void AShinbi::Attack()
+{
+	//0번이 재생안되고 있으면 재생
+	if (!mAnimInstance->Montage_IsPlaying(mAttackMontageArray[0])&&
+		!mAnimInstance->GetAttack())
+	{
+		mAnimInstance->Montage_Play(mAttackMontageArray[0]);
+		
+		mAnimInstance->SetAttack(true);
+
+	}
 
 }

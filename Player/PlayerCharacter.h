@@ -34,12 +34,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
 	UInputAction* mJumpAction;
 
+	//attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
+	UInputAction* mAttackAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* mMappingContext;
 
+	class UPlayerAnim* mAnimInstance;
 
-
-	
 
 private:
 	float TargetZoomLength = 500.f; // 목표 줌 거리 (초기값 설정)
@@ -63,6 +66,12 @@ public:
 	void CameraLoopUp(float scale);
 	void EnhancedInputMove(const FInputActionValue& value);
 	void EnhancedInputJump(const FInputActionInstance& instance);
+	void EnhancedInputAttack(const FInputActionInstance& key);
+
+	
+protected:
+	virtual void Attack();	//각 캐릭터에서 무조건구현
+
 	
 
 

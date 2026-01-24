@@ -17,6 +17,9 @@ class UE5_RPG_API AShinbi : public APlayerCharacter
 public:
 	// Sets default values for this character's properties
 	AShinbi();
+protected:
+	UPROPERTY(EditAnywhere, category = "Shinbi", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TArray<UAnimMontage*> mAttackMontageArray;
 
 protected:
 	// Called when the game starts or when spawned
@@ -29,5 +32,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+protected:
+	virtual void Attack();
+	
 	
 };

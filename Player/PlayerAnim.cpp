@@ -8,6 +8,7 @@ UPlayerAnim::UPlayerAnim()
 {
 	mDirection = 0.f;
 	mSpeed = 0.f;
+	mAttack = false;
 }
 
 void UPlayerAnim::NativeInitializeAnimation()
@@ -30,3 +31,8 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 	}
 } 
+
+void UPlayerAnim::AnimNotify_AttackEnd()
+{
+	mAttack = false;
+}
