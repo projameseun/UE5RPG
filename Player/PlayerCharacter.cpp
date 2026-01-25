@@ -22,6 +22,13 @@ APlayerCharacter::APlayerCharacter()
 	//Camera의 부모 Component로 Arm을 지정
 	mCamera->SetupAttachment(mArm);
 
+
+		// CharacterMovement 설정 개선
+	GetCharacterMovement()->AirControl = 0.4f;              // 공중 제어력
+	GetCharacterMovement()->GravityScale = 1.75f;           // 중력 (높을수록 빠르게 떨어짐)
+	GetCharacterMovement()->JumpZVelocity = 600.f;          // 점프 높이
+	GetCharacterMovement()->BrakingDecelerationFalling = 0.f; // 낙하 중 감속 (0 = 공중에서 미끄러지지 않음)
+
 	//inputsystem
 	static ConstructorHelpers::FObjectFinder<class UInputAction> MoveAsset = (TEXT("/Script/EnhancedInput.InputAction'/Game/Input/IA_Move.IA_Move'"));
 
@@ -266,12 +273,14 @@ void APlayerCharacter::EnhancedInputJump(const FInputActionInstance& instance)
 
 	if (CurrentEvent == ETriggerEvent::Started)
 	{
-		Jump(); // 시작 이벤트일 때만 점프 실행
+		if (mAnimInstance->GetSpeed() == 0.f)
+		{
+			Jump(); // 시작 이벤트일 때만 점프 실행\
+
+			mAnimInstance->ChangeAnimType(EPlayerAnimType::Jump);
+		}
 	}
-	else if (CurrentEvent == ETriggerEvent::Completed)
-	{
-		StopJumping(); // 완료 이벤트일 때만 점프 중지
-	}
+	
 }
 
 void APlayerCharacter::EnhancedInputAttack(const FInputActionInstance& key)

@@ -6,9 +6,16 @@
 #include "Animation/AnimInstance.h"
 #include "PlayerAnim.generated.h"
 
-/**
- * 
- */
+//이 Enum문은 블루프린트로 사용할수 있다고 명시하는거 그래야 블루프린트에서 Enum을 사용할수 있다.
+UENUM(BlueprintType)
+enum class EPlayerAnimType : uint8
+{
+	Ground,
+	Jump,
+	Death,
+	Attack
+};
+
 UCLASS()
 class UE5_RPG_API UPlayerAnim : public UAnimInstance
 {
@@ -24,6 +31,12 @@ protected:
 	float mSpeed;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool mAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool mOnGround;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	EPlayerAnimType mAnimType;
 	
 
 public:
@@ -46,6 +59,19 @@ public:
 	{
 		return mAttack;
 	}
+	void ChangeAnimType(EPlayerAnimType type)
+	{
+		mAnimType = type;
+	}
+	float GetSpeed() const
+	{
+		return mSpeed;
+	}
+
+	EPlayerAnimType GetAnimType() const
+	{
+		return mAnimType;
+	}
 
 public:
 	virtual void NativeInitializeAnimation();
@@ -57,4 +83,7 @@ public:
 	//UFUNCTION를 붙여줘야 멤버 변수로 사용할수 있습니다.
 	UFUNCTION()
 	void AnimNotify_AttackEnd();
+
+	UFUNCTION()
+	void AnimNotify_JumpEnd();
 };
