@@ -11,7 +11,6 @@ UENUM(BlueprintType)
 enum class EPlayerAnimType : uint8
 {
 	Ground,
-	Jump,
 	Death,
 	Attack
 };
@@ -29,11 +28,18 @@ protected:
 	float mDirection;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float mSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float mVelocityZ;	//위의속도
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	bool mAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	bool mOnGround;
+	bool mFalling;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	bool mGround;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EPlayerAnimType mAnimType;
@@ -62,10 +68,6 @@ public:
 	void ChangeAnimType(EPlayerAnimType type)
 	{
 		mAnimType = type;
-	}
-	float GetSpeed() const
-	{
-		return mSpeed;
 	}
 
 	EPlayerAnimType GetAnimType() const

@@ -269,17 +269,15 @@ void APlayerCharacter::EnhancedInputMove(const FInputActionValue& value)
 
 void APlayerCharacter::EnhancedInputJump(const FInputActionInstance& instance)
 {
-	ETriggerEvent CurrentEvent = instance.GetTriggerEvent();
+	//ETriggerEvent CurrentEvent = instance.GetTriggerEvent();
 
-	if (CurrentEvent == ETriggerEvent::Started)
-	{
-		if (mAnimInstance->GetSpeed() == 0.f)
-		{
-			Jump(); // 시작 이벤트일 때만 점프 실행\
+	//UCharacterMovementComponent* Movement = GetCharacterMovement()
 
-			mAnimInstance->ChangeAnimType(EPlayerAnimType::Jump);
-		}
-	}
+	
+			Jump(); // 시작 이벤트일 때만 점프 실행
+			//mAnimInstance->ChangeAnimType(EPlayerAnimType::Jump);
+		
+	
 	
 }
 
