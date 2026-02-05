@@ -19,6 +19,7 @@ Build/
 Intermediate/
 Plugins/**/Intermediate/
 DerivedDataCache/
+Content/
 
 # --- 3. 로컬 설정 및 임시 저장 데이터 (제외) ---
 Saved/*

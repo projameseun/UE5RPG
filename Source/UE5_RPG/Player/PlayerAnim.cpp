@@ -13,7 +13,6 @@ UPlayerAnim::UPlayerAnim()
 	mGround = false;
 	mVelocityZ = 0.f;
 	mAnimType = EPlayerAnimType::Ground;
-
 }
 
 void UPlayerAnim::NativeInitializeAnimation()
@@ -33,26 +32,26 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 
 		if (movement)
 		{
-			// 수평 속도 계산
+			// 속도 계산
 			FVector velocity = movement->Velocity;
-			// 수직 속도 계산
-			FVector zVelocity = movement->Velocity;
+			
+			// 수평 속도 계산
 			mSpeed = FVector(velocity.X, velocity.Y, 0.f).Size();
-			mVelocityZ = FVector(0.f, 0.f, velocity.Z).Size();
+			
+			// 수직 속도 계산 (부호 유지 - 양수: 상승, 음수: 하강)
+			mVelocityZ = velocity.Z;
+			//수정
+			// 상태 업데이트
 			if (movement->IsFalling())
 			{
 				mFalling = true;
 				mGround = false;
-				UE_LOG(LogTemp, Warning, TEXT("Falling"));
 			}
 			else
 			{		
-					mGround = true;
-					mFalling = false;
-					UE_LOG(LogTemp, Warning, TEXT("Ground"));
-				
+				mGround = true;
+				mFalling = false;
 			}
-			
 		}
 	}
 }
@@ -61,6 +60,7 @@ void UPlayerAnim::AnimNotify_AttackEnd()
 {
 	mAttack = false;
 }
+
 void UPlayerAnim::AnimNotify_JumpEnd()
 {
 	//mAnimType = EPlayerAnimType::Ground;
