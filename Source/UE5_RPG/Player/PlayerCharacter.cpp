@@ -60,6 +60,8 @@ APlayerCharacter::APlayerCharacter()
 	{
 		mMappingContext = IMC.Object;
 	}
+
+	m_AttackEnable = true;
 }
 
 // Called when the game starts or when spawned
@@ -143,26 +145,7 @@ void APlayerCharacter::CameraZoom(float scale)
 		
 }
 
-//zoom보간
-//void APlayerCharacter::CameraZoom(float scale)
-//{
-//	// 1. 목표치 계산: 마우스 입력을 받아 가고자 하는 목적지를 갱신
-//	// scale이 0이 아닐 때만 목표치를 변경합니다.
-//	TargetZoomLength -= scale * 50.f;
-//
-//	// 2. 목표치 제한 (Clamp): 30 ~ 500 사이로 유지
-//	TargetZoomLength = FMath::Clamp(TargetZoomLength, 30.f, 500.f);
-//
-//	// 3. 현재 거리에서 목표 거리까지 부드럽게 보간 (FInterpTo)
-//	// InterpSpeed(여기서는 10.f)가 높을수록 줌이 빠르고, 낮을수록 천천히 움직입니다.
-//	mArm->TargetArmLength = FMath::FInterpTo(
-//		mArm->TargetArmLength,
-//		TargetZoomLength,
-//		GetWorld()->GetDeltaSeconds(),
-//		10.f
-//	);
-//}
-// 
+
 //LoopUp보간
 void APlayerCharacter::CameraLoopUp(float scale)
 {
@@ -286,12 +269,28 @@ void APlayerCharacter::EnhancedInputAttack(const FInputActionInstance& key)
 	ETriggerEvent CurrentEvent = key.GetTriggerEvent();
 	if (CurrentEvent == ETriggerEvent::Started)
 	{
-		Attack();
+		
+		if (m_AttackEnable)	//공격가능상태만 공격
+		{
+			m_AttackEnable = false;
+			Attack();
+
+		}
 	}
 }
 
 void APlayerCharacter::Attack()
 {
 
+}
+
+void APlayerCharacter::NomalAttack()
+{
+
+}
+
+void APlayerCharacter::AttackEnd()
+{
+	m_AttackEnable = true;
 }
 

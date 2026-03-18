@@ -84,8 +84,15 @@ public:
 	//AnimNotify_ 를 한 뒤에 뒤에는 내가만든 Notify이름을 붙여줍니다.
 	//UFUNCTION를 붙여줘야 멤버 변수로 사용할수 있습니다.
 	UFUNCTION()
+	void AnimNotify_NomalAttack();
+	
+	UFUNCTION()
 	void AnimNotify_AttackEnd();
 
 	UFUNCTION()
 	void AnimNotify_JumpEnd();
+
+	UFUNCTION()
+	void AnimNotify_AttackCombo();
+
 };

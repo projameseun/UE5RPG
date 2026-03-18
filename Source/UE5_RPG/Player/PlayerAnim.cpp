@@ -56,12 +56,42 @@ void UPlayerAnim::NativeUpdateAnimation(float DeltaSeconds)
 	}
 }
 
+void UPlayerAnim::AnimNotify_NomalAttack()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(TryGetPawnOwner());
+	
+	if (player)
+	{
+		player->NomalAttack();
+	}
+}
+
 void UPlayerAnim::AnimNotify_AttackEnd()
 {
-	mAttack = false;
+	
+	
+	APlayerCharacter* player = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (player)
+	{
+		player->AttackEnd();
+	}
+
+
 }
 
 void UPlayerAnim::AnimNotify_JumpEnd()
 {
 	//mAnimType = EPlayerAnimType::Ground;
+}
+
+
+void UPlayerAnim::AnimNotify_AttackCombo()
+{
+	APlayerCharacter* player = Cast<APlayerCharacter>(TryGetPawnOwner());
+
+	if (player)
+	{
+		player->SetEnableAttack(true);
+	}
 }

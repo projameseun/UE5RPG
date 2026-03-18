@@ -41,8 +41,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enhanced Input", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* mMappingContext;
 
+
+	bool		m_AttackEnable;
+
 	class UPlayerAnim* mAnimInstance;
 
+public:
+	void SetEnableAttack(bool enable)
+	{
+		m_AttackEnable = enable;
+	}
 
 private:
 	float TargetZoomLength = 500.f; // 목표 줌 거리 (초기값 설정)
@@ -71,6 +79,10 @@ public:
 	
 protected:
 	virtual void Attack();	//각 캐릭터에서 무조건구현
+
+public:
+	virtual void NomalAttack();
+	virtual void AttackEnd();
 
 	
 

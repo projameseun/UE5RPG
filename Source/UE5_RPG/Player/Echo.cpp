@@ -46,6 +46,22 @@ AEcho::AEcho()
 	{
 		mAttackMontageArray.Add(AttackMontageAsset.Object);
 	}
+	
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageAsset2(TEXT("/Script/Engine.AnimMontage'/Game/Player/MT_EchoAttack02.MT_EchoAttack02'"));
+
+	if (AttackMontageAsset2.Succeeded())
+	{
+		mAttackMontageArray.Add(AttackMontageAsset2.Object);
+	}
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AttackMontageAsset3(TEXT("/Script/Engine.AnimMontage'/Game/Player/MT_EchoAttack03.MT_EchoAttack03'"));
+
+	if (AttackMontageAsset3.Succeeded())
+	{
+		mAttackMontageArray.Add(AttackMontageAsset3.Object);
+	}
+
+	m_AttackIdx = 0;
 }
 
 // Called when the game starts or when spawned
@@ -73,13 +89,29 @@ void AEcho::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEcho::Attack()
 {
 	//0번이 재생안되고 있으면 재생
-	if (!mAnimInstance->Montage_IsPlaying(mAttackMontageArray[0]) &&
-		!mAnimInstance->GetAttack())
+	if (!mAnimInstance->Montage_IsPlaying(mAttackMontageArray[m_AttackIdx]))
 	{
-		mAnimInstance->Montage_Play(mAttackMontageArray[0]);
+		mAnimInstance->Montage_Play(mAttackMontageArray[m_AttackIdx]);
 
 		mAnimInstance->SetAttack(true);
 
+	
+		//다음 인덱스를 가리킨다
+		m_AttackIdx = (m_AttackIdx + 1) % mAttackMontageArray.Num();
+		UE_LOG(LogTemp, Warning, TEXT("ArrayNum%d"), mAttackMontageArray.Num());
+		UE_LOG(LogTemp, Warning, TEXT("m_AttackIdx:%d"),m_AttackIdx);
 	}
 
+}
+
+void AEcho::NomalAttack()
+{
+	Super::NomalAttack();
+}
+
+void AEcho::AttackEnd()
+{
+	Super::AttackEnd();
+	
+	m_AttackIdx = 0;
 }

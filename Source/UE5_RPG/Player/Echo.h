@@ -26,7 +26,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, category = "Weapon", BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	class UStaticMeshComponent* StaticWeapon;
-		  
+		 
+	int32		m_AttackIdx;
 	
 
 protected:
@@ -43,5 +44,9 @@ public:
 protected:
 	virtual void Attack();
 
+
+public:
+	virtual void NomalAttack();
+	virtual void AttackEnd();
 
 };
